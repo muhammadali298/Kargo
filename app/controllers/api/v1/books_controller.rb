@@ -3,17 +3,17 @@ class Api::V1::BooksController < ApplicationController
 
   def index
     @books = Book.all
-    render json: @books
+    render :index
   end
 
   def show
-    render json: @book
+    render :show
   end
 
   def create
     @book = Book.new(book_params)
     if @book.save
-      render json: @book, status: :created
+      render :create, status: :created
     else
       render json: @book.errors, status: :unprocessable_entity
     end
@@ -21,7 +21,7 @@ class Api::V1::BooksController < ApplicationController
 
   def update
     if @book.update(book_params)
-      render json: @book
+      render :update
     else
       render json: @book.errors, status: :unprocessable_entity
     end
@@ -29,6 +29,7 @@ class Api::V1::BooksController < ApplicationController
 
   def destroy
     @book.destroy
+    head :no_content
   end
 
   private

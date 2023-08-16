@@ -2,18 +2,18 @@ class Api::V1::ReadingListsController < ApplicationController
   before_action :set_reading_list, only: [:show, :update, :destroy, :add_books, :remove_books, :update_book]
 
   def index
-    @reading_lists = ReadingList.all
-    render json: @reading_lists
+    @reading_lists = ReadingList.includes(:books, :reading_list_items).all
+    render :index
   end
 
   def show
-    render json: @reading_list
+    render :show
   end
 
   def create
     @reading_list = ReadingList.new(reading_list_params)
     if @reading_list.save
-      render json: @reading_list, status: :created
+      render :create, status: :created
     else
       render json: @reading_list.errors, status: :unprocessable_entity
     end
@@ -21,7 +21,7 @@ class Api::V1::ReadingListsController < ApplicationController
 
   def update
     if @reading_list.update(reading_list_params)
-      render json: @reading_list
+      render :update
     else
       render json: @reading_list.errors, status: :unprocessable_entity
     end
@@ -29,20 +29,21 @@ class Api::V1::ReadingListsController < ApplicationController
 
   def destroy
     @reading_list.destroy
+    head :no_content
   end
 
   def add_books
     book_ids = params[:book_ids]
     books_to_add = Book.where(id: book_ids)
     @reading_list.books << books_to_add
-    render json: @reading_list
+    render :show
   end
 
   def remove_books
     book_ids = params[:book_ids]
     books_to_remove = Book.where(id: book_ids)
     @reading_list.books.destroy(books_to_remove)
-    render json: @reading_list
+    render :show
   end
 
   def update_book
@@ -53,13 +54,13 @@ class Api::V1::ReadingListsController < ApplicationController
       reading_list_item.update(status: new_status)
     end
   
-    render json: book
+    render :show
   end
 
   private
 
   def set_reading_list
-    @reading_list = ReadingList.find(params[:id])
+    @reading_list = ReadingList.includes(:books, :reading_list_items).find(params[:id])
   end
 
   def reading_list_params

@@ -7,7 +7,7 @@ class Api::V1::ReadingListsController < ApplicationController
   end
 
   def show
-    render :show
+    render_show_response
   end
 
   def create
@@ -32,18 +32,28 @@ class Api::V1::ReadingListsController < ApplicationController
     head :no_content
   end
 
-  def add_books
-    book_ids = params[:book_ids]
-    books_to_add = Book.where(id: book_ids)
-    @reading_list.books << books_to_add
-    render :show
+  def remove_books
+    service = ReadingListService.new(@reading_list)
+    service.book_ids = params[:book_ids]
+    result = service.remove_books
+
+    if result[:success]
+      render_show_response
+    else
+      render json: { error: result[:error] }, status: :unprocessable_entity
+    end
   end
 
-  def remove_books
-    book_ids = params[:book_ids]
-    books_to_remove = Book.where(id: book_ids)
-    @reading_list.books.destroy(books_to_remove)
-    render :show
+  def add_books
+    service = ReadingListService.new(@reading_list)
+    service.book_ids = params[:book_ids]
+    result = service.add_books
+
+    if result[:success]
+      render_show_response
+    else
+      render json: { error: result[:error] }, status: :unprocessable_entity
+    end
   end
 
   def update_book
@@ -54,10 +64,26 @@ class Api::V1::ReadingListsController < ApplicationController
       reading_list_item.update(status: new_status)
     end
   
-    render :show
+    render_show_response
   end
 
   private
+
+  def render_show_response
+    sort_by = params[:sort_by]
+    sort_type = params[:sort_type] == 'desc' ? :desc : :asc
+    @books = sort_books(@reading_list.books, sort_by, sort_type)
+
+    render :show
+  end
+
+  def sort_books(books, sort_by, sort_type)
+    if sort_by.present? && Book.column_names.include?(sort_by)
+      books.order("#{sort_by} #{sort_type}")
+    else
+      books
+    end
+  end
 
   def set_reading_list
     @reading_list = ReadingList.includes(:books, :reading_list_items).find(params[:id])

@@ -1,5 +1,5 @@
 class Api::V1::ReadingListsController < ApplicationController
-  before_action :set_reading_list, only: [:show, :update, :destroy, :add_books, :remove_books, :update_book]
+  before_action :set_reading_list, only: [:show, :update, :destroy, :add_books, :remove_books, :update_book, :export_to_yaml, :export_to_pantry]
 
   def index
     @reading_lists = ReadingList.includes(:books, :reading_list_items).all
@@ -65,6 +65,26 @@ class Api::V1::ReadingListsController < ApplicationController
     end
   
     render_show_response
+  end
+
+  def export_to_yaml
+    exporter = ReadingListExporterService.new(@reading_list)
+    yaml_data = exporter.export_to_yaml
+
+    render json: { yaml: yaml_data }
+  end
+
+  def export_to_pantry
+    pantry_id = params[:pantry_id]
+    basket_name = params[:basket_name]
+    exporter = ReadingListExporterService.new(@reading_list)
+    export_successful = exporter.export_to_pantry(pantry_id, basket_name)
+
+    if export_successful
+      render json: { message: "Reading list successfully exported to Pantry basket #{basket_name}" }
+    else
+      render json: { message: "Failed to export reading list to Pantry basket #{basket_name}" }, status: :unprocessable_entity
+    end
   end
 
   private

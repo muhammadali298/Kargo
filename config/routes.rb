@@ -11,6 +11,8 @@ Rails.application.routes.draw do
           post :add_books
           delete :remove_books
           put :update_book
+          get :export_to_yaml
+          post :export_to_pantry
         end
       end
     end

@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_15_223826) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_17_023042) do
+  create_table "book_categories", force: :cascade do |t|
+    t.integer "book_id", null: false
+    t.integer "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["book_id"], name: "index_book_categories_on_book_id"
+    t.index ["category_id"], name: "index_book_categories_on_category_id"
+  end
+
   create_table "books", force: :cascade do |t|
     t.string "isbn", null: false
     t.string "title", null: false
@@ -20,6 +29,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_15_223826) do
     t.index ["author"], name: "index_books_on_author"
     t.index ["isbn"], name: "index_books_on_isbn", unique: true
     t.index ["title"], name: "index_books_on_title"
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name"
   end
 
   create_table "reading_list_items", force: :cascade do |t|
@@ -39,6 +55,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_15_223826) do
     t.index ["title"], name: "index_reading_lists_on_title"
   end
 
+  add_foreign_key "book_categories", "books"
+  add_foreign_key "book_categories", "categories"
   add_foreign_key "reading_list_items", "books"
   add_foreign_key "reading_list_items", "reading_lists"
 end

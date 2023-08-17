@@ -2,7 +2,7 @@ class Api::V1::BooksController < ApplicationController
   before_action :set_book, only: [:show, :update, :destroy]
 
   def index
-    @books = Book.all
+    @books = Book.includes(:categories)
     render :index
   end
 
@@ -11,8 +11,11 @@ class Api::V1::BooksController < ApplicationController
   end
 
   def create
-    @book = Book.new(book_params)
-    if @book.save
+    @book = Book.new
+    service = BookManagementService.new(@book, book_params)
+    service.create_or_update
+
+    if @book.errors.empty?
       render :create, status: :created
     else
       render json: @book.errors, status: :unprocessable_entity
@@ -20,7 +23,10 @@ class Api::V1::BooksController < ApplicationController
   end
 
   def update
-    if @book.update(book_params)
+    service = BookManagementService.new(@book, book_params)
+    service.create_or_update
+
+    if @book.errors.empty?
       render :update
     else
       render json: @book.errors, status: :unprocessable_entity
@@ -35,10 +41,12 @@ class Api::V1::BooksController < ApplicationController
   private
 
   def set_book
-    @book = Book.find(params[:id])
+    @book = Book.includes(:categories).find(params[:id])
   end
 
   def book_params
-    params.require(:book).permit(:isbn, :title, :author)
+    permitted_params = params.require(:book).permit(:isbn, :title, :author)
+    category_names = Array(params[:category_names])
+    permitted_params.merge(category_names: category_names)
   end
 end

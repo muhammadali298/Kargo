@@ -3,5 +3,5 @@ class ReadingList < ApplicationRecord
   has_many :books, through: :reading_list_items
 
 
-  validates :title, presence: true
+  validates :title, presence: true, uniqueness: true
 end

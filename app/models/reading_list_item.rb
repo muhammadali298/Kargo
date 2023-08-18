@@ -10,11 +10,11 @@ class ReadingListItem < ApplicationRecord
     finished: 'finished'
   }
 
-  after_create :set_default_status
+  before_validation :set_default_status
 
   private
 
   def set_default_status
-    update(status: :unread)
+    self.status ||= :unread
   end
 end

@@ -23,18 +23,18 @@ To run the test suite, follow these steps:
 
 2. DB migration
 
-  ```sh
-  rake db:create
-  rake db:migrate
+    ```sh
+    rake db:create
+    rake db:migrate
 
 3. Run the tests
 
-  ```sh
-  bundle exec rspec
+    ```sh
+    bundle exec rspec
 
 4. Run server
 
-  ```sh
-  rails s
+    ```sh
+    rails s
 
 Postman collection of the API is attached in root directory of the code. That can be used to interact with the API

@@ -27,12 +27,12 @@ To run the test suite, follow these steps:
   rake db:create
   rake db:migrate
 
-3. Run the test cases
+3. Run the tests
 
   ```sh
   bundle exec rspec
 
-4. Run the server
+4. Run server
 
   ```sh
   rails s

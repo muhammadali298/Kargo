@@ -1,4 +1,3 @@
-# app/services/book_management_service.rb
 class BookManagementService
   def initialize(book, book_params = {})
     category_names = book_params[:category_names] || []

@@ -10,7 +10,6 @@ class ReadingListExporterService
 
   def export_to_pantry(pantry_id, basket_name)
     reading_list_data = generate_reading_list_data
-    byebug
     url = "https://getpantry.cloud/apiv1/pantry/#{pantry_id}/basket/#{basket_name}"
 
     headers = {

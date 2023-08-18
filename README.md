@@ -1,6 +1,6 @@
 # Kargo
 
-This manages reading list.
+This manages reading list. This is an API and the postman collection to interact with the API is in the root directory.
 
 ## Setup
 
